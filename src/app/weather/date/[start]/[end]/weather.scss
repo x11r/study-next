@@ -1,0 +1,47 @@
+.date-picker {
+  background-color: rgb(200, 200, 200);
+  padding: 1em;
+  margin: 1em;
+  border: 1px solid rgb(160, 160, 160);
+  border-radius: 10px;
+  box-shadow: 0.5em 0.5em 0.5em rgb(200, 200, 200);
+}
+
+button.get-weather {
+  border: 1px solid rgb(100, 100, 100);
+  padding: 1em;
+  margin: 1em;
+  border-radius: 5px;
+  color: rgb(50, 50, 50);
+  background-color: chartreuse;
+  font-weight: bold;
+  box-shadow: 0.5em 0.5em 0.5em rgb(200, 200, 200);
+
+  .receiving {
+    color: rgb(150, 150, 150);
+    background-color: rgb(100, 100, 100);
+  }
+}
+
+
+table.weather-table {
+  border-collapse: collapse;
+  background-color: rgba(50, 50, 50, 3);
+  tr>th, tr>td {
+    border: 2px solid rgba(250, 50, 50, 0);
+    background-color: rgba(240, 240, 240, 10);
+    margin: 0.5em;
+    padding: 0.7em;
+    font-size: 0.7em;
+  }
+}
+
+div#graph {
+  margin: 4em auto;
+  max-width: 1000px;
+}
+
+button.year {
+  border: 1px solid rgb(100, 100, 100);
+  border-radius: 4px;
+}
