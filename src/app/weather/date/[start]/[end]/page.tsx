@@ -28,42 +28,50 @@ ChartJS.register(
 
 import ja from 'date-fns/locale/ja'
 import '@total-typescript/ts-reset'
+import { constants } from '@/app/constants'
 
 registerLocale('ja', ja)
 
 function getParams() {
-    let params = useParams()
+    const params: string[] = useParams()
     return params
 }
 
 const Home = () => {
-    const pathParams = getParams()
+
+    const pathParams: string[] = getParams()
     const [weathers, setWeathers] = useState([])
     const [weatherCount, setWeatherCount] = useState(0)
-    // let weatherCount = 0
 
     // today
     const today = new Date()
     const lastYear = new Date(today.getFullYear() - 1, today.getMonth(), today.getDate())
     const yesterday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1)
 
-    let prefectureId = 44
-    let station = '東京'
+    const [prefectureId, setPrefectureId] = useState(44)
 
-    let pathDateStart = pathParams.start
-    let pathDateEnd = pathParams.end
+    const [selectedStation, setStation] = useState('福岡')
+    const setSelectedStation = element => {
+        setPrefectureId(element.target.dataset.prefecture)
+        setStation(element.target.dataset.station)
+    }
+
+    // console.log(pathParams)
+
+    let pathDateStart: string = String(pathParams.start)
+    let pathDateEnd: string = String(pathParams.end)
 
     // データ受信ステータス
     const [weatherDataReceiving, setWeatherDataReceiving] = useState(false)
 
     // 開始日の初期値
-    const dateStartDefault = new Date(pathDateStart?.substr(0, 4),
-        pathDateStart?.substr(4, 2) - 1,
-        pathDateStart?.substr(6, 2))
+    const dateStartDefault = new Date(Number(pathDateStart.substring(0, 4)),
+        Number(pathDateStart?.substring(4, 6)) - 1,
+        Number(pathDateStart?.substring(6, 8)))
     // 終了日の初期値
-    const dateEndDefault = new Date(pathDateEnd?.substr(0, 4),
-        pathDateEnd?.substr(4, 2) - 1,
-        pathDateEnd?.substr(6, 2))
+    const dateEndDefault = new Date(Number(pathDateEnd?.substring(0, 4)),
+        Number(pathDateEnd?.substring(4, 6)) - 1,
+        Number(pathDateEnd?.substring(6, 8)))
 
     const [dateStart, setDateStart] = useState(dateStartDefault)
     const [dateEnd, setDateEnd] = useState(dateEndDefault)
@@ -80,7 +88,7 @@ const Home = () => {
 
         const baseUrl = "http://localhost:10101/api/weather/get?"
         const url = baseUrl + 'prefectureId=' + prefectureId
-            + '&station=' + station
+            + '&station=' + selectedStation
             + '&startDate=' + dateStartYMD
             + '&endDate=' + dateEndYMD
         Axios.get(url)
@@ -111,6 +119,14 @@ const Home = () => {
         setDateEnd(new Date(dateEnd.getFullYear() - 1, dateEnd.getMonth(), dateEnd.getDate()))
     }
     const nextYearEnd = () => {
+        setDateEnd(new Date(dateEnd.getFullYear() + 1, dateEnd.getMonth(), dateEnd.getDate()))
+    }
+    const setLastYear = () => {
+        setDateStart(new Date(dateStart.getFullYear() - 1, dateStart.getMonth(), dateStart.getDate()))
+        setDateEnd(new Date(dateEnd.getFullYear() - 1, dateEnd.getMonth(), dateEnd.getDate()))
+    }
+    const setNextYear = () => {
+        setDateStart(new Date(dateStart.getFullYear() + 1, dateStart.getMonth(), dateStart.getDate()))
         setDateEnd(new Date(dateEnd.getFullYear() + 1, dateEnd.getMonth(), dateEnd.getDate()))
     }
 
@@ -189,7 +205,6 @@ const Home = () => {
     }
 
     return (
-
         <div>
             <div className="flex justify-center gap-10">
                 <div>日付範囲</div>
@@ -226,6 +241,14 @@ const Home = () => {
                         翌年
                     </button>
                 </div>
+                <div className="date-picker">
+                    <button onClick={() => setLastYear()} className="year">
+                        前年
+                    </button>
+                    <button onClick={() => setNextYear()} className="year">
+                        翌年
+                    </button>
+                </div>
                 <div>
                     <button
                         className="get-weather {weatherDataReceiving && 'receiving'}"
@@ -239,6 +262,36 @@ const Home = () => {
                     </button>
                 </div>
             </div>
+            <div>
+                <div className="flex jutify-center gap-5">
+                    {constants.prefectures.map((prefecture, index1: number) => {
+                        return (
+                            <>
+                                {/*{prefecture.name_jp}*/}
+                                {prefecture.stations?.map((station, index2: number) => {
+                                    return (
+                                        <div key={index2}>
+                                            <input
+                                                type="radio"
+                                                name="selectedStation"
+                                                id={'station-' + station.name}
+                                                data-prefecture={prefecture.id}
+                                                data-station={station.name_jp}
+                                                onClick={(e) => setSelectedStation(e)}
+                                                defaultChecked={selectedStation === station.name_jp}
+                                            />
+                                            {/*{selectedStation === station.name_jp && 'selected =='}*/}
+                                            <label htmlFor={'station-' + station.name}>
+                                                {station.name_jp}
+                                            </label>
+                                        </div>
+                                    )
+                                })}
+                            </>
+                        )
+                    })}
+                </div>
+            </div>
             <div className="flex justify-center gap-10">
                 <div>
                     取得件数： {weatherCount}
@@ -247,8 +300,8 @@ const Home = () => {
             <div id="graph">
                 {drawGraph()}
             </div>
-
-            <div className="flex justify-center">
+            x
+            <div className="flex justify-center weather-data-box">
                 {weathers?.length > 0 && (
                     <table className="weather-table">
                         <thead>
@@ -261,6 +314,12 @@ const Home = () => {
                         </thead>
                         <tbody>
                         {weathers?.map((weather: any, index) => {
+
+                            const date = new Date(weather.date.substring(0, 4),
+                                weather.date.substring(4, 6),
+                                weather.date.substring(6, 8)
+                            )
+
                             return (
                                 <tr key={index}>
                                     <td>{index}</td>

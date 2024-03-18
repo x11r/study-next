@@ -1,5 +1,4 @@
-'use client'
-import React from 'react'
+
 import Link from 'next/link'
 
 const Start = () => {
@@ -19,32 +18,20 @@ const End = () => {
     return String(year) + month + String(day)
 }
 
-type State = {
-    count: number
+function Home() {
+    return (
+        <main className="flex min-h-screen flex-col p-24">
+            <h1>気象情報</h1>
+            <div>start = {Start()}</div>
+            <div>
+                <Link href={'weather/date/' + Start() + '/' + End()}>
+                    日付範囲指定 / {Start()} / {End()}
+                </Link>
+            </div>
+            <div className="z-10 max-w-5xl w-full items-center">
+            </div>
+        </main>
+    )
 }
 
-export default class Page extends React.Component<NonNullable<unknown>, State> {
-    constructor(props: NonNullable<unknown> | Readonly<NonNullable<unknown> | Readonly<State>>) {
-        super(props)
-        this.state = {
-            count: 0
-        }
-    }
-    render () {
-        return (
-            <main className="flex min-h-screen flex-col item-center justify-between p-24">
-                <h1>気象情報</h1>
-
-                <div>start = {Start()}</div>
-                <div>
-                    <Link href={'weather/date/' + Start() + '/' + End()}>
-                        日付範囲指定 / {Start()} / {End()}
-                    </Link>
-                </div>
-                <div className="z-10 max-w-5xl w-full items-center">
-
-                </div>
-            </main>
-        )
-    }
-}
+export default Home
