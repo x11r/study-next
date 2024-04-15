@@ -1,6 +1,6 @@
 
 export const constants = {
-    apiBaseUrl: 'http://localhost:10101',
+    apiBaseUrl: 'http://localhost:8016',
     prefectures: [
         {
             id: 44,
