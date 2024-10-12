@@ -1,6 +1,6 @@
 'use client'
-import { useState } from 'react'
-import {useParams} from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useParams } from 'next/navigation'
 import Axios from 'axios'
 
 import DatePicker, {registerLocale} from 'react-datepicker'
@@ -49,6 +49,7 @@ const Home = () => {
     const yesterday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1)
 
     const [prefectureId, setPrefectureId] = useState(44)
+    const [prefectures, setPrefectures] = useState([])
 
     const [selectedStation, setStation] = useState('福岡')
     const setSelectedStation = element => {
@@ -75,6 +76,19 @@ const Home = () => {
 
     const [dateStart, setDateStart] = useState(dateStartDefault)
     const [dateEnd, setDateEnd] = useState(dateEndDefault)
+
+    useEffect(() => {
+        const url = constants.apiBaseUrl + '/api/weather/constants'
+        Axios.get(url)
+            .then((response) => {
+
+                // 都道府県をセットする
+                setPrefectures(response.data.prefectures)
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+    }, [prefectureId])
 
     const getWeathers = () => {
         setWeatherDataReceiving(true)
@@ -264,25 +278,26 @@ const Home = () => {
             </div>
             <div>
                 <div className="flex jutify-center gap-5">
-                    {constants.prefectures.map((prefecture, index1: number) => {
+                </div>
+                <div className="flex jutify-center gap-5">
+                    {prefectures?.map((prefecture: any, index1: number) => {
                         return (
                             <>
-                                {/*{prefecture.name_jp}*/}
-                                {prefecture.stations?.map((station, index2: number) => {
+                                {prefecture.name}
+                                {prefecture.stations?.map((station: any, index2: number) => {
                                     return (
                                         <div key={index2}>
                                             <input
                                                 type="radio"
                                                 name="selectedStation"
-                                                id={'station-' + station.name}
+                                                id={'station-' + station}
                                                 data-prefecture={prefecture.id}
-                                                data-station={station.name_jp}
+                                                data-station={station}
                                                 onClick={(e) => setSelectedStation(e)}
-                                                defaultChecked={selectedStation === station.name_jp}
+                                                defaultChecked={selectedStation === station}
                                             />
-                                            {/*{selectedStation === station.name_jp && 'selected =='}*/}
-                                            <label htmlFor={'station-' + station.name}>
-                                                {station.name_jp}
+                                            <label htmlFor={'station-' + station}>
+                                                {station}
                                             </label>
                                         </div>
                                     )
