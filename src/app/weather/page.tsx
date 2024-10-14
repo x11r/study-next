@@ -5,7 +5,7 @@ const Start = () => {
     const now = new Date()
     const year = now.getFullYear() - 1
     const month = ("0" + String(now.getMonth() + 1).slice(-2))
-    const day = now.getDate()
+    const day = ("0" + String(now.getDate())).slice(-2)
 
     return String(year) + month + String(day)
 }
@@ -13,7 +13,7 @@ const End = () => {
     const now = new Date()
     const year = now.getFullYear()
     const month = ("0" + String(now.getMonth() + 1).slice(-2))
-    const day = now.getDate() - 1
+    const day = ("0" + String(now.getDate() - 1)).slice(-2)
 
     return String(year) + month + String(day)
 }

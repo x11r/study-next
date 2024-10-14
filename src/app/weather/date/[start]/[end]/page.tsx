@@ -48,10 +48,12 @@ const Home = () => {
     const lastYear = new Date(today.getFullYear() - 1, today.getMonth(), today.getDate())
     const yesterday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1)
 
+    // 初期表示設定用
     const [prefectureId, setPrefectureId] = useState(44)
     const [prefectures, setPrefectures] = useState([])
 
-    const [selectedStation, setStation] = useState('福岡')
+    const [selectedStation, setStation] = useState('東京')
+
     const setSelectedStation = element => {
         setPrefectureId(element.target.dataset.prefecture)
         setStation(element.target.dataset.station)
@@ -100,11 +102,13 @@ const Home = () => {
             + ('0' + String(dateEnd.getMonth() + 1)).slice(-2)
             + ('0' + dateEnd.getDate()).slice(-2)
 
-        const baseUrl = "http://localhost:10101/api/weather/get?"
+        const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL + '/api/weather/get?'
+
         const url = baseUrl + 'prefectureId=' + prefectureId
             + '&station=' + selectedStation
             + '&startDate=' + dateStartYMD
             + '&endDate=' + dateEndYMD
+
         Axios.get(url)
             .then((response) => {
                 console.log('success')
@@ -278,15 +282,13 @@ const Home = () => {
             </div>
             <div>
                 <div className="flex jutify-center gap-5">
-                </div>
-                <div className="flex jutify-center gap-5">
-                    {prefectures?.map((prefecture: any, index1: number) => {
+                    {constants.prefectures.map((prefecture, index1: number) => {
                         return (
-                            <>
-                                {prefecture.name}
-                                {prefecture.stations?.map((station: any, index2: number) => {
+                            <span key={index1}>
+                                {/*{prefecture.name_jp}*/}
+                                {prefecture.stations?.map((station, index2: number) => {
                                     return (
-                                        <div key={index2}>
+                                        <span key={index2}>
                                             <input
                                                 type="radio"
                                                 name="selectedStation"
@@ -299,10 +301,10 @@ const Home = () => {
                                             <label htmlFor={'station-' + station}>
                                                 {station}
                                             </label>
-                                        </div>
+                                        </span>
                                     )
                                 })}
-                            </>
+                            </span>
                         )
                     })}
                 </div>
@@ -315,7 +317,6 @@ const Home = () => {
             <div id="graph">
                 {drawGraph()}
             </div>
-            x
             <div className="flex justify-center weather-data-box">
                 {weathers?.length > 0 && (
                     <table className="weather-table">
