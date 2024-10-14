@@ -83,7 +83,6 @@ const Home = () => {
         const url = constants.apiBaseUrl + '/api/weather/constants'
         Axios.get(url)
             .then((response) => {
-
                 // 都道府県をセットする
                 setPrefectures(response.data.prefectures)
             })
@@ -102,7 +101,7 @@ const Home = () => {
             + ('0' + String(dateEnd.getMonth() + 1)).slice(-2)
             + ('0' + dateEnd.getDate()).slice(-2)
 
-        const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL + '/api/weather/get?'
+        const baseUrl = constants.apiBaseUrl + '/api/weather/get?'
 
         const url = baseUrl + 'prefectureId=' + prefectureId
             + '&station=' + selectedStation
@@ -281,11 +280,11 @@ const Home = () => {
                 </div>
             </div>
             <div>
+
                 <div className="flex jutify-center gap-5">
-                    {constants.prefectures.map((prefecture, index1: number) => {
+                    {prefectures?.map((prefecture, index1: number) => {
                         return (
                             <span key={index1}>
-                                {/*{prefecture.name_jp}*/}
                                 {prefecture.stations?.map((station, index2: number) => {
                                     return (
                                         <span key={index2}>
@@ -310,7 +309,7 @@ const Home = () => {
                 </div>
             </div>
             <div className="flex justify-center gap-10">
-                <div>
+            <div>
                     取得件数： {weatherCount}
                 </div>
             </div>
