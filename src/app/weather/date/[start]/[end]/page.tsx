@@ -1,6 +1,6 @@
 'use client'
-import { useState } from 'react'
-import {useParams} from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useParams } from 'next/navigation'
 import Axios from 'axios'
 
 import DatePicker, {registerLocale} from 'react-datepicker'
@@ -50,6 +50,7 @@ const Home = () => {
 
     // 初期表示設定用
     const [prefectureId, setPrefectureId] = useState(44)
+    const [prefectures, setPrefectures] = useState([])
 
     const [selectedStation, setStation] = useState('東京')
 
@@ -78,6 +79,18 @@ const Home = () => {
     const [dateStart, setDateStart] = useState(dateStartDefault)
     const [dateEnd, setDateEnd] = useState(dateEndDefault)
 
+    useEffect(() => {
+        const url = constants.apiBaseUrl + '/api/weather/constants'
+        Axios.get(url)
+            .then((response) => {
+                // 都道府県をセットする
+                setPrefectures(response.data.prefectures)
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+    }, [prefectureId])
+
     const getWeathers = () => {
         setWeatherDataReceiving(true)
 
@@ -88,7 +101,7 @@ const Home = () => {
             + ('0' + String(dateEnd.getMonth() + 1)).slice(-2)
             + ('0' + dateEnd.getDate()).slice(-2)
 
-        const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL + '/api/weather/get?'
+        const baseUrl = constants.apiBaseUrl + '/api/weather/get?'
 
         const url = baseUrl + 'prefectureId=' + prefectureId
             + '&station=' + selectedStation
@@ -267,26 +280,25 @@ const Home = () => {
                 </div>
             </div>
             <div>
+
                 <div className="flex jutify-center gap-5">
-                    {constants.prefectures.map((prefecture, index1: number) => {
+                    {prefectures?.map((prefecture, index1: number) => {
                         return (
                             <span key={index1}>
-                                {/*{prefecture.name_jp}*/}
                                 {prefecture.stations?.map((station, index2: number) => {
                                     return (
                                         <span key={index2}>
                                             <input
                                                 type="radio"
                                                 name="selectedStation"
-                                                id={'station-' + station.name}
+                                                id={'station-' + station}
                                                 data-prefecture={prefecture.id}
-                                                data-station={station.name_jp}
+                                                data-station={station}
                                                 onClick={(e) => setSelectedStation(e)}
-                                                defaultChecked={selectedStation === station.name_jp}
+                                                defaultChecked={selectedStation === station}
                                             />
-                                            {/*{selectedStation === station.name_jp && 'selected =='}*/}
-                                            <label htmlFor={'station-' + station.name}>
-                                                {station.name_jp}
+                                            <label htmlFor={'station-' + station}>
+                                                {station}
                                             </label>
                                         </span>
                                     )
@@ -297,7 +309,7 @@ const Home = () => {
                 </div>
             </div>
             <div className="flex justify-center gap-10">
-                <div>
+            <div>
                     取得件数： {weatherCount}
                 </div>
             </div>
